@@ -313,10 +313,16 @@ export default class Jaipur implements Game {
                 disabled = true;
                 const playerSelectedCards = this.playerStates[this.currentPlayerIndex].hand.filter((card, i) => this.playerStates[this.currentPlayerIndex].handIsSelected[i]);
                 if (this.marketIsSelected.filter(value => value).length > 1 &&
-                    this.marketIsSelected.filter(value => value).length === this.playerStates[this.currentPlayerIndex].handIsSelected.filter(value => value).length &&
-                    this.market.every((card, i) => !this.marketIsSelected[i] || playerSelectedCards.find(needle => needle == card) === undefined)) {
+                    this.marketIsSelected.filter(value => value).length <= (this.playerStates[this.currentPlayerIndex].camels + this.playerStates[this.currentPlayerIndex].handIsSelected.filter(value => value).length) &&
+                    this.market.every((card, i) => !this.marketIsSelected[i] || playerSelectedCards.find(needle => needle == card) === undefined) &&
+                    this.playerStates[this.currentPlayerIndex].hand.length + this.marketIsSelected.filter(value => value).length - playerSelectedCards.length <= 7) {
                     disabled = false;
                 }
+                // console.log(this.marketIsSelected.filter(value => value).length > 1);
+                // console.log(this.marketIsSelected.filter(value => value).length <= (this.playerStates[this.currentPlayerIndex].camels + this.playerStates[this.currentPlayerIndex].handIsSelected.filter(value => value).length));
+                // console.log(this.market.every((card, i) => !this.marketIsSelected[i] || playerSelectedCards.find(needle => needle == card) === undefined));
+                // console.log(this.playerStates[this.currentPlayerIndex].hand.length + this.marketIsSelected.filter(value => value).length - playerSelectedCards.length <= 7);
+                // console.log(playerSelectedCards, this.market, this.playerStates[this.currentPlayerIndex].hand);
                 buttons.push(["do-exchange-goods", "Exchange", disabled]);
 
                 buttons.push(["cancel-exchange-goods", "Cancel", false]);
@@ -466,10 +472,14 @@ export default class Jaipur implements Game {
                     const marketCards: [string, number][] = this.market.map((value, i) => [value, i] as [string, number]).filter((_, i) => this.marketIsSelected[i]);
                     const playerCards: [string, number][] = this.playerStates[this.currentPlayerIndex].hand.map((value, i) => [value, i] as [string, number]).filter((_, i) => this.playerStates[this.currentPlayerIndex].handIsSelected[i]);
 
-                    assert.equal(marketCards.length, playerCards.length);
-                    for (let i = 0; i < marketCards.length; i++) {
+                    for (let i = 0; i < playerCards.length; i++) {
                         this.playerStates[this.currentPlayerIndex].hand[playerCards[i][1]] = marketCards[i][0];
                         this.market[marketCards[i][1]] = playerCards[i][0];
+                    }
+                    this.playerStates[this.currentPlayerIndex].camels -= marketCards.length - playerCards.length;
+                    for (let i = playerCards.length; i < marketCards.length; i++) {
+                        this.playerStates[this.currentPlayerIndex].hand.push(marketCards[i][0]);
+                        this.market[marketCards[i][1]] = "camel";
                     }
 
                     this.marketIsSelected.forEach((_, i) => this.marketIsSelected[i] = false);
