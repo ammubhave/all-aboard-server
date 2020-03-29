@@ -360,7 +360,7 @@ export default class Jaipur implements Game {
                 buttons.push(["next-round", "Next Round", false]);
                 break;
             case "end-game":
-                buttons.push(["reset", "Reset", false]);
+                buttons.push(["reset", "Reset (Congratulations " + this.playerNames[this.currentPlayerIndex] + "!)", false]);;
                 break;
         }
 
@@ -572,7 +572,8 @@ export default class Jaipur implements Game {
                     }
                 }
 
-                if (this.playerStates[0].sealsOfExcellence > 2 || this.playerStates[1].sealsOfExcellence > 2) {
+                if (this.playerStates[0].sealsOfExcellence >= 2 || this.playerStates[1].sealsOfExcellence >= 2) {
+                    this.currentPlayerIndex = this.playerStates[0].sealsOfExcellence >= 2 ? 0 : 1;
                     this.status = "end-game";
                 }
             }
