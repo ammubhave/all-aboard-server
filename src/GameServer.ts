@@ -17,7 +17,7 @@ export default class GameServer {
 
     constructor(game: Game) {
         this.app = express();
-        this.port = process.env.PORT || GameServer.DEFAULT_PORT
+        this.port = process.env.PORT || GameServer.DEFAULT_PORT;
         this.server = http.createServer(this.app);
         this.io = require("socket.io").listen(this.server, { origins: '*:*' });
 
@@ -33,14 +33,14 @@ export default class GameServer {
 
     private onBoardChange = (board: any) => {
         this.connectedBoards.forEach(socket => socket.emit("board", board));
-    }
+    };
 
     private onHandChange = (playerName: string, hand: any) => {
         if (!this.connectedPlayers.has(playerName)) {
             return;
         }
         this.connectedPlayers.get(playerName).forEach(socket => socket.emit("hand", hand));
-    }
+    };
 
     private listen(): void {
         this.server.listen(this.port, () => {
@@ -55,12 +55,15 @@ export default class GameServer {
             if (playerName == "board") {
                 this.connectedBoards.add(socket);
                 socket.emit("board", this.game.getBoard());
+                socket.emit("players", Array.from(this.connectedPlayers.keys()));
             } else {
                 if (!this.connectedPlayers.has(playerName)) {
                     this.connectedPlayers.set(playerName, new Set());
                 }
                 this.connectedPlayers.get(playerName).add(socket);
                 socket.emit("hand", this.game.getHand(playerName));
+
+                this.connectedBoards.forEach(socket => socket.emit("players", Array.from(this.connectedPlayers.keys())));
             }
 
             socket.on("action", (action: any) => this.game.takeAction(playerName, action));
@@ -75,6 +78,7 @@ export default class GameServer {
                     if (this.connectedPlayers.get(playerName).size == 0) {
                         this.connectedPlayers.delete(playerName);
                     }
+                    this.connectedBoards.forEach(socket => socket.emit("players", Array.from(this.connectedPlayers.keys())));
                 }
 
                 console.log("Player %s disconnected", playerName);

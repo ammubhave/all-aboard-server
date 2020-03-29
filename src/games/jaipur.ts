@@ -264,53 +264,62 @@ export default class Jaipur implements Game {
     }
 
     public getBoard(): any {
-        const buttons: [string, string][] = [];
+        const buttons: [string, string, boolean][] = [];
         const marketIsSelectable = [false, false, false, false, false];
 
+        let disabled = true;
         switch (this.status) {
             case 'reset':
-                buttons.push(["start", "Start Game"]);
+                buttons.push(["start", "Start Game", false]);
                 break;
             case "start-turn":
-                buttons.push(["exchange-goods", "Exchange Goods"]);
+                buttons.push(["exchange-goods", "Exchange Goods", false]);
 
+                disabled = true;
                 if (this.playerStates[this.currentPlayerIndex].hand.length < 7 && !this.market.every(card => card === "camel")) {
-                    buttons.push(["take-single-good", "Take Single Good"]);
+                    disabled = false;
                 }
+                buttons.push(["take-single-good", "Take Single Good", disabled]);
 
+                disabled = true;
                 if (!this.market.every(card => card !== "camel")) {
-                    buttons.push(["take-all-camels", "Take All Camels"]);
+                    disabled = false;
                 }
+                buttons.push(["take-all-camels", "Take All Camels", disabled]);
 
                 const showSellCards = () => {
                     const handCounts = { diamond: 0, silver: 0, gold: 0, cloth: 0, spice: 0, leather: 0 };
                     // @ts-ignore
                     this.playerStates[this.currentPlayerIndex].hand.forEach(card => handCounts[card] += 1);
                     return handCounts.diamond > 1 || handCounts.silver > 1 || handCounts.gold > 1 || handCounts.cloth > 0 || handCounts.spice > 0 || handCounts.leather > 0;
-                }
+                };
+                disabled = true;
                 if (showSellCards()) {
-                    buttons.push(["sell-cards", "Sell Cards"]);
+                    disabled = false;
                 }
+                buttons.push(["sell-cards", "Sell Cards", disabled]);
                 break;
             case "take-single-good":
                 marketIsSelectable.forEach((_, i) => {
-                    if (this.market[i] !== "camel") { marketIsSelectable[i] = true }
+                    if (this.market[i] !== "camel") { marketIsSelectable[i] = true; }
                 });
-                buttons.push(["cancel-take-single-good", "Cancel"]);
+                buttons.push(["cancel-take-single-good", "Cancel", false]);
                 break;
             case "exchange-goods":
                 marketIsSelectable.forEach((_, i) => {
-                    if (this.market[i] !== "camel") { marketIsSelectable[i] = true }
+                    if (this.market[i] !== "camel") { marketIsSelectable[i] = true; }
                 });
 
+                disabled = true;
                 const playerSelectedCards = this.playerStates[this.currentPlayerIndex].hand.filter((card, i) => this.playerStates[this.currentPlayerIndex].handIsSelected[i]);
                 if (this.marketIsSelected.filter(value => value).length > 1 &&
                     this.marketIsSelected.filter(value => value).length === this.playerStates[this.currentPlayerIndex].handIsSelected.filter(value => value).length &&
                     this.market.every((card, i) => !this.marketIsSelected[i] || playerSelectedCards.find(needle => needle == card) === undefined)) {
-                    buttons.push(["do-exchange-goods", "Exchange"]);
+                    disabled = false;
                 }
+                buttons.push(["do-exchange-goods", "Exchange", disabled]);
 
-                buttons.push(["cancel-exchange-goods", "Cancel"]);
+                buttons.push(["cancel-exchange-goods", "Cancel", false]);
                 break;
             case "sell-cards":
                 const canSellCards = () => {
@@ -331,19 +340,21 @@ export default class Jaipur implements Game {
                     if (type === null) return false;
                     if ((type === "diamond" || type === "silver" || type === "gold") && count < 2) return false;
                     return true;
-                }
+                };
 
+                disabled = true;
                 if (canSellCards()) {
-                    buttons.push(["do-sell-cards", "Sell"]);
+                    disabled = false;
                 }
+                buttons.push(["do-sell-cards", "Sell", disabled]);
 
-                buttons.push(["cancel-sell-cards", "Cancel"]);
+                buttons.push(["cancel-sell-cards", "Cancel", false]);
                 break;
             case "end-round":
-                buttons.push(["next-round", "Next Round"]);
+                buttons.push(["next-round", "Next Round", false]);
                 break;
             case "end-game":
-                buttons.push(["reset", "Reset"]);
+                buttons.push(["reset", "Reset", false]);
                 break;
         }
 
@@ -374,7 +385,7 @@ export default class Jaipur implements Game {
             camelToken: this.camelToken,
             currentPlayerIndex: this.currentPlayerIndex,
             buttons,
-        }
+        };
     }
 
     public getHand(playerName: string): HandState {
@@ -420,7 +431,7 @@ export default class Jaipur implements Game {
             hand: this.playerStates[playerIndex].hand,
             handIsSelected: this.playerStates[playerIndex].handIsSelected,
             displayText,
-        }
+        };
     }
 
     public takeAction(playerName: string, action: any) {
