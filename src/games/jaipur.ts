@@ -554,20 +554,26 @@ export default class Jaipur implements Game {
 
                 if (this.getScore(0) > this.getScore(1)) {
                     this.playerStates[0].sealsOfExcellence += 1;
+                    this.lastGameLoser = 1;
                 } else if (this.getScore(1) > this.getScore(0)) {
                     this.playerStates[1].sealsOfExcellence += 1;
+                    this.lastGameLoser = 0;
                 } else {
                     const playerBonuses = [0, 1].map(i => this.playerStates[i].bonusTokens.bonus_3.length + this.playerStates[i].bonusTokens.bonus_4.length + this.playerStates[i].bonusTokens.bonus_5.length);
                     if (playerBonuses[0] > playerBonuses[1]) {
                         this.playerStates[0].sealsOfExcellence += 1;
+                        this.lastGameLoser = 1;
                     } else if (playerBonuses[1] > playerBonuses[0]) {
                         this.playerStates[1].sealsOfExcellence += 1;
+                        this.lastGameLoser = 0;
                     } else {
                         const playerGoods = [0, 1].map(i => Object.values(this.playerStates[i].goodsTokens).map(values => values.length).reduce((a, b) => a + b, 0));
                         if (playerGoods[0] > playerGoods[1]) {
                             this.playerStates[0].sealsOfExcellence += 1;
+                            this.lastGameLoser = 1;
                         } else if (playerGoods[1] > playerGoods[0]) {
                             this.playerStates[1].sealsOfExcellence += 1;
+                            this.lastGameLoser = 0;
                         }
                     }
                 }
