@@ -318,11 +318,6 @@ export default class Jaipur implements Game {
                     this.playerStates[this.currentPlayerIndex].hand.length + this.marketIsSelected.filter(value => value).length - playerSelectedCards.length <= 7) {
                     disabled = false;
                 }
-                // console.log(this.marketIsSelected.filter(value => value).length > 1);
-                // console.log(this.marketIsSelected.filter(value => value).length <= (this.playerStates[this.currentPlayerIndex].camels + this.playerStates[this.currentPlayerIndex].handIsSelected.filter(value => value).length));
-                // console.log(this.market.every((card, i) => !this.marketIsSelected[i] || playerSelectedCards.find(needle => needle == card) === undefined));
-                // console.log(this.playerStates[this.currentPlayerIndex].hand.length + this.marketIsSelected.filter(value => value).length - playerSelectedCards.length <= 7);
-                // console.log(playerSelectedCards, this.market, this.playerStates[this.currentPlayerIndex].hand);
                 buttons.push(["do-exchange-goods", "Exchange", disabled]);
 
                 buttons.push(["cancel-exchange-goods", "Cancel", false]);
