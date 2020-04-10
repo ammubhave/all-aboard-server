@@ -6,17 +6,17 @@ import { listenerCount } from 'cluster';
 type Card = {
     color: string,
     prestige: number,
-    cost: { white: number, black: number, red: number, blue: number, green: number }
-}
+    cost: { white: number, black: number, red: number, blue: number, green: number; };
+};
 
 type Noble = {
-    cost: { color: string, count: number }[],
+    cost: { color: string, count: number; }[],
     prestige: number,
-}
+};
 
 type BoardState = {
     faceupCards: Card[][],
-    coins: { white: number, black: number, red: number, blue: number, green: number, gold: number },
+    coins: { white: number, black: number, red: number, blue: number, green: number, gold: number; },
     nobles: Noble[],
     currentPlayerIndex: number,
 };
@@ -48,7 +48,7 @@ type PlayerHand = {
     handCoins: HandCoins,
     reservedCards: Card[],
     nobles: Noble[],
-}
+};
 
 export default class Splendor implements Game {
     LEVEL1_WHITE = [
@@ -60,7 +60,7 @@ export default class Splendor implements Game {
         [0, 1, 2, 1, 1, 0],
         [0, 2, 2, 0, 1, 0],
         [3, 1, 0, 0, 1, 0],
-    ]
+    ];
     LEVEL1_BLUE = [
         [1, 0, 0, 0, 2, 0],
         [0, 0, 0, 0, 3, 0],
@@ -70,7 +70,7 @@ export default class Splendor implements Game {
         [1, 0, 1, 2, 1, 0],
         [1, 0, 2, 2, 0, 0],
         [0, 1, 3, 1, 0, 0],
-    ]
+    ];
     LEVEL1_GREEN = [
         [2, 1, 0, 0, 0, 0],
         [0, 0, 0, 3, 0, 0],
@@ -80,7 +80,7 @@ export default class Splendor implements Game {
         [1, 1, 0, 1, 2, 0],
         [0, 1, 0, 2, 2, 0],
         [1, 3, 1, 0, 0, 0],
-    ]
+    ];
     LEVEL1_RED = [
         [0, 2, 1, 0, 0, 0],
         [3, 0, 0, 0, 0, 0],
@@ -90,7 +90,7 @@ export default class Splendor implements Game {
         [2, 1, 1, 0, 1, 0],
         [2, 0, 1, 0, 2, 0],
         [1, 0, 0, 1, 3, 0],
-    ]
+    ];
     LEVEL1_black = [
         [0, 0, 2, 1, 0, 0],
         [0, 0, 3, 0, 0, 0],
@@ -100,7 +100,7 @@ export default class Splendor implements Game {
         [1, 2, 1, 1, 0, 0],
         [2, 2, 0, 1, 0, 0],
         [0, 0, 1, 3, 1, 0],
-    ]
+    ];
 
     LEVEL2_WHITE = [
         [0, 0, 0, 5, 0, 2],
@@ -109,7 +109,7 @@ export default class Splendor implements Game {
         [0, 0, 1, 4, 2, 2],
         [2, 3, 0, 3, 0, 1],
         [0, 0, 0, 5, 3, 2],
-    ]
+    ];
     LEVEL2_BLUE = [
         [0, 0, 5, 0, 0, 2],
         [0, 0, 6, 0, 0, 3],
@@ -117,7 +117,7 @@ export default class Splendor implements Game {
         [3, 0, 2, 3, 0, 1],
         [4, 2, 0, 0, 1, 2],
         [0, 5, 3, 0, 0, 2],
-    ]
+    ];
     LEVEL2_GREEN = [
         [0, 0, 5, 0, 0, 2],
         [0, 0, 6, 0, 0, 3],
@@ -125,7 +125,7 @@ export default class Splendor implements Game {
         [3, 0, 2, 3, 0, 1],
         [4, 2, 0, 0, 1, 2],
         [0, 5, 3, 0, 0, 2],
-    ]
+    ];
     LEVEL2_RED = [
         [0, 0, 0, 0, 5, 2],
         [0, 0, 0, 6, 0, 3],
@@ -133,7 +133,7 @@ export default class Splendor implements Game {
         [1, 4, 2, 0, 0, 2],
         [0, 3, 0, 2, 3, 1],
         [3, 0, 0, 0, 5, 2],
-    ]
+    ];
     LEVEL2_black = [
         [0, 0, 0, 0, 5, 2],
         [0, 0, 0, 0, 6, 3],
@@ -141,38 +141,38 @@ export default class Splendor implements Game {
         [0, 1, 4, 2, 0, 2],
         [3, 0, 3, 0, 2, 1],
         [0, 0, 5, 3, 0, 2],
-    ]
+    ];
 
     LEVEL3_WHITE = [
         [0, 0, 0, 0, 7, 4],
         [3, 0, 0, 0, 7, 5],
         [3, 0, 0, 3, 6, 4],
         [0, 3, 3, 5, 3, 3],
-    ]
+    ];
     LEVEL3_BLUE = [
         [7, 0, 0, 0, 0, 4],
         [7, 3, 0, 0, 0, 5],
         [6, 3, 0, 0, 3, 4],
         [3, 0, 3, 3, 5, 3],
-    ]
+    ];
     LEVEL3_GREEN = [
         [0, 7, 0, 0, 0, 4],
         [0, 7, 3, 0, 0, 5],
         [3, 6, 3, 0, 0, 4],
         [3, 5, 3, 0, 3, 3],
-    ]
+    ];
     LEVEL3_RED = [
         [0, 0, 7, 0, 0, 4],
         [0, 0, 7, 3, 0, 5],
         [0, 3, 6, 3, 0, 4],
         [3, 5, 3, 0, 3, 3],
-    ]
+    ];
     LEVEL3_black = [
         [0, 0, 0, 7, 0, 4],
         [0, 0, 0, 7, 3, 5],
         [0, 0, 3, 6, 3, 4],
         [3, 3, 5, 3, 0, 3],
-    ]
+    ];
 
     LEVEL1_CARDS = (() => {
         const cards = new Set<Card>();
@@ -194,7 +194,7 @@ export default class Splendor implements Game {
                     },
                     prestige: card[5],
                     color,
-                })
+                });
             }
         }
         return cards;
@@ -220,7 +220,7 @@ export default class Splendor implements Game {
                     },
                     prestige: card[5],
                     color,
-                })
+                });
             }
         }
         return cards;
@@ -246,7 +246,7 @@ export default class Splendor implements Game {
                     },
                     prestige: card[5],
                     color,
-                })
+                });
             }
         }
         return cards;
@@ -263,7 +263,7 @@ export default class Splendor implements Game {
         [3, 3, 3, 0, 0],
         [0, 0, 3, 3, 3],
         [4, 4, 0, 0, 0],
-    ]
+    ];
     NOBLES = (() => {
         const nobles = new Set<Noble>();
         const COLOR_ORDER = ["white", "blue", "green", "red", "black"];
@@ -280,7 +280,7 @@ export default class Splendor implements Game {
             nobles.add({
                 cost,
                 prestige: 3,
-            })
+            });
         }
         return nobles;
     })();
@@ -290,7 +290,7 @@ export default class Splendor implements Game {
 
     private playerNames: string[];
     private board: Card[][];
-    private coins: { white: number, black: number, red: number, blue: number, green: number, gold: number };
+    private coins: { white: number, black: number, red: number, blue: number, green: number, gold: number; };
     private currentPlayerIndex: number;
     private drawPiles: Card[][];
     private playerHands: PlayerHand[];
@@ -382,7 +382,7 @@ export default class Splendor implements Game {
                 },
                 reservedCards: [],
                 nobles: []
-            })
+            });
         });
 
         this.playerNames = rotateArrayRandom(playerNames);
@@ -399,13 +399,16 @@ export default class Splendor implements Game {
         this.onHandChange = onHandChange;
     }
 
+    public addPlayer(playerName: string) { }
+    public removePlayer(playerName: string) { }
+
     public getBoard(): BoardState {
         return {
             faceupCards: this.board,
             coins: this.coins,
             nobles: this.nobles,
             currentPlayerIndex: this.currentPlayerIndex,
-        }
+        };
     }
 
     public getHand(playerName: string) {
@@ -416,7 +419,7 @@ export default class Splendor implements Game {
             reservedCards: this.playerHands[playerIndex].reservedCards,
             currentPlayerIndex: this.currentPlayerIndex,
             nobles: this.playerHands[playerIndex].nobles,
-        }
+        };
     }
 
     public takeAction(playerName: string, action: any) {
@@ -457,7 +460,7 @@ export default class Splendor implements Game {
             shuffleArrayRandom(Array.from(this.LEVEL3_CARDS)),
             shuffleArrayRandom(Array.from(this.LEVEL2_CARDS)),
             shuffleArrayRandom(Array.from(this.LEVEL1_CARDS)),
-        ]
+        ];
     }
 
     private drawFromDrawPile(level: number) {

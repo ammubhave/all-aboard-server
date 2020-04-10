@@ -3,12 +3,14 @@ import { Game } from "./games/interface";
 import * as http from "http";
 import * as SocketIO from "socket.io";
 import Jaipur from "./games/jaipur";
+import Codenames from "./games/codenames";
+
+type GameKey = string;
 
 class GameInfo {
     connectedBoards: Set<SocketIO.Socket>;
     connectedPlayers: Map<string, Set<SocketIO.Socket>>;
     game: Game;
-    gameName: string;
 
     constructor(
         gameName: string,
@@ -17,9 +19,10 @@ class GameInfo {
     ) {
         this.connectedBoards = new Set();
         this.connectedPlayers = new Map();
-        this.gameName = gameName;
 
         switch (gameName) {
+            case 'codenames':
+                this.game = new Codenames();
             case 'jaipur':
                 this.game = new Jaipur();
         }
@@ -35,28 +38,37 @@ export default class GameServer {
     private server: http.Server;
     private io: SocketIO.Server;
     private port: string | number;
+    private password: string;
 
-    private games: Map<string, GameInfo>;
+    private games: Map<GameKey, GameInfo>;
 
     constructor() {
         this.app = express();
         this.port = process.env.PORT || GameServer.DEFAULT_PORT;
+        this.password = process.env.PASSWORD || "";
         this.server = http.createServer(this.app);
         this.io = require("socket.io").listen(this.server, { origins: '*:*' });
+
+        this.io.use((socket, next) => {
+            const password = socket.handshake.query.password || "";
+            if (password === this.password) return next();
+            console.log("Authentication failed: %s", password);
+            return next(new Error('Authentication error'));
+        });
 
         this.games = new Map();
 
         this.listen();
     }
 
-    private onBoardChange = (gameCode: string, board: any) => {
-        const myConnectedClients = this.games.get(gameCode);
+    private onBoardChange = (gameKey: GameKey, board: any) => {
+        const myConnectedClients = this.games.get(gameKey);
         if (myConnectedClients === undefined) { return; }
         myConnectedClients.connectedBoards.forEach(socket => socket.emit("board", board));
     };
 
-    private onHandChange = (gameCode: string, playerName: string, hand: any) => {
-        const myConnectedClients = this.games.get(gameCode);
+    private onHandChange = (gameKey: GameKey, playerName: string, hand: any) => {
+        const myConnectedClients = this.games.get(gameKey);
         if (myConnectedClients === undefined) { return; }
         const connectedPlayer = myConnectedClients.connectedPlayers.get(playerName);
         if (connectedPlayer === undefined) { return; }
@@ -72,28 +84,24 @@ export default class GameServer {
             const playerName: string = socket.handshake.query.playerName;
             const gameCode: string = socket.handshake.query.gameCode;
             const gameName: string = socket.handshake.query.gameName;
+            const gameKey: string = `${gameName}#####${gameCode}`;
 
-            console.log("Connected player %s with game code %s.", playerName, gameCode);
+            console.log("Connected player %s with game code %s.", playerName, gameKey);
 
-            if (!this.games.has(gameCode)) {
+            if (!this.games.has(gameKey)) {
                 this.games.set(
-                    gameCode,
+                    gameKey,
                     new GameInfo(
                         gameName,
-                        (board) => this.onBoardChange(gameCode, board),
-                        (playerName: string, hand: any) => this.onHandChange(gameCode, playerName, hand)));
+                        (board) => this.onBoardChange(gameKey, board),
+                        (playerName: string, hand: any) => this.onHandChange(gameKey, playerName, hand)));
 
-                console.log("Game code %s created", gameCode);
-            } else {
-                if (this.games.get(gameCode).gameName !== gameName) {
-                    console.log("Game code already associated with another game");
-                    return;
-                }
+                console.log("Game code %s created", gameKey);
             }
 
-            const connectedBoards = this.games.get(gameCode).connectedBoards;
-            const connectedPlayers = this.games.get(gameCode).connectedPlayers;
-            const game = this.games.get(gameCode).game;
+            const connectedBoards = this.games.get(gameKey).connectedBoards;
+            const connectedPlayers = this.games.get(gameKey).connectedPlayers;
+            const game = this.games.get(gameKey).game;
 
             if (playerName == "board") {
                 connectedBoards.add(socket);
@@ -102,6 +110,7 @@ export default class GameServer {
             } else {
                 if (!connectedPlayers.has(playerName)) {
                     connectedPlayers.set(playerName, new Set());
+                    game.addPlayer(playerName);
                 }
                 connectedPlayers.get(playerName).add(socket);
                 socket.emit("hand", game.getHand(playerName));
@@ -120,13 +129,14 @@ export default class GameServer {
                     connectedPlayers.get(playerName).delete(socket);
                     if (connectedPlayers.get(playerName).size == 0) {
                         connectedPlayers.delete(playerName);
+                        game.removePlayer(playerName);
                     }
                     connectedBoards.forEach(socket => socket.emit("players", Array.from(connectedPlayers.keys())));
                 }
 
                 if (connectedBoards.size === 0 && connectedPlayers.size === 0) {
-                    this.games.delete(gameCode);
-                    console.log("Game code %s deleted", gameCode);
+                    this.games.delete(gameKey);
+                    console.log("Game code %s deleted", gameKey);
                 }
 
                 console.log("Player %s disconnected", playerName);

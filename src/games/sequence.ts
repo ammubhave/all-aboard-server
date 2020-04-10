@@ -44,6 +44,9 @@ export default class Sequence implements Game {
         this.reset();
     }
 
+    public addPlayer(playerName: string) { }
+    public removePlayer(playerName: string) { }
+
     public reset() {
         this.playerNames = [];
         this.board = [];

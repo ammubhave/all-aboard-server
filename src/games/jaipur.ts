@@ -1,6 +1,6 @@
 import { Game } from './interface';
 import * as assert from 'assert';
-import { rotateArrayRandom, shuffleArrayRandom } from '../util';
+import { shuffleArrayRandom } from '../util';
 
 type Card = string;
 type BoardPlayerState = {
@@ -45,7 +45,6 @@ type BoardState = {
         camel: boolean,
     },
     currentPlayerIndex: number,
-    // status: "no-started" | "turn-start" | "",
 };
 type HandState = {
     hand: Card[],
@@ -53,31 +52,17 @@ type HandState = {
     displayText: string,
 };
 
+const CARDS_ALL = {
+    diamond: 6,
+    gold: 6,
+    silver: 6,
+    cloth: 8,
+    spice: 8,
+    leather: 10,
+    camel: 11 - 3,
+};
+
 export default class Jaipur implements Game {
-    private static readonly GOODS_TOKENS_ALL = {
-        diamond: [5, 5, 5, 7, 7],
-        gold: [5, 5, 5, 6, 6],
-        silver: [5, 5, 5, 5, 5],
-        cloth: [1, 1, 2, 2, 3, 3, 5],
-        spice: [1, 1, 2, 2, 3, 3, 5],
-        leather: [1, 1, 1, 1, 1, 1, 2, 3, 4],
-    };
-
-    private static readonly BONUS_TOKENS_ALL = {
-        bonus_3: [1, 2, 3, 1, 2, 3],
-        bonus_4: [4, 5, 6, 4, 5, 6],
-        bonus_5: [8, 9, 10, 8, 9, 10],
-    };
-
-    private static readonly CARDS_ALL = {
-        diamond: 6,
-        gold: 6,
-        silver: 6,
-        cloth: 8,
-        spice: 8,
-        leather: 10,
-        camel: 11 - 3,
-    };
 
     private playerStates: [PlayerState, PlayerState];
     private market: [Card, Card, Card, Card, Card];
@@ -115,7 +100,6 @@ export default class Jaipur implements Game {
     }
 
     public reset() {
-
         this.market = [null, null, null, null, null];
         this.marketIsSelected = [false, false, false, false, false];
 
@@ -180,7 +164,7 @@ export default class Jaipur implements Game {
             this.currentPlayerIndex = Math.floor(Math.random() * 2);
         }
 
-        this.drawPile = shuffleArrayRandom([].concat(...Array.from(Object.entries(Jaipur.CARDS_ALL).map((([type, count]) => {
+        this.drawPile = shuffleArrayRandom([].concat(...Array.from(Object.entries(CARDS_ALL).map((([type, count]) => {
             return new Array<string>(count).fill(type);
         })))));
         this.drawPileOverdrawn = false;
@@ -254,6 +238,9 @@ export default class Jaipur implements Game {
 
         this.newRound();
     }
+
+    public addPlayer(playerName: string) { }
+    public removePlayer(playerName: string) { }
 
     public setOnBoardChangeCallback(onBoardChange: (board: any) => void) {
         this.onBoardChange = onBoardChange;
