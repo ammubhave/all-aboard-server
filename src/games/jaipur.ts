@@ -84,6 +84,7 @@ export default class Jaipur implements Game {
     private camelToken: boolean;
     private currentPlayerIndex: number;
     private playerNames: string[];
+    private playerNamesStandby: string[];
     private topDiscard: Card;
     private status: "reset" | "start-turn" | "take-single-good" | "exchange-goods" | "sell-cards" | "end-round" | "end-game";
     private lastGameLoser: number;
@@ -95,10 +96,14 @@ export default class Jaipur implements Game {
         this.onBoardChange = () => { };
         this.onHandChange = () => { };
         this.playerNames = [];
+        this.playerNamesStandby = [];
         this.reset();
     }
 
     public reset() {
+        this.playerNames = Array.from(this.playerNamesStandby);
+        this.playerNamesStandby = [];
+
         this.market = [null, null, null, null, null];
         this.marketIsSelected = [false, false, false, false, false];
 
@@ -234,19 +239,30 @@ export default class Jaipur implements Game {
         if (this.playerNames.length !== 2) return;
         console.log("Starting game");
 
+        this.playerNamesStandby = Array.from(this.playerNames);
         this.newRound();
     }
 
     public addPlayer(playerName: string) {
         if (playerName === "board") return;
 
-        this.playerNames.push(playerName);
+        if (this.status === "reset") {
+            this.playerNames.push(playerName);
+        } else {
+            this.playerNamesStandby.push(playerName);
+        }
+
         this.onBoardChange(this.getBoard());
     }
     public removePlayer(playerName: string) {
         if (playerName === "board") return;
 
-        this.playerNames.splice(this.playerNames.indexOf(playerName), 1);
+        if (this.status === "reset") {
+            this.playerNames.splice(this.playerNames.indexOf(playerName), 1);
+        } else {
+            this.playerNamesStandby.splice(this.playerNamesStandby.indexOf(playerName), 1);
+        }
+
         this.onBoardChange(this.getBoard());
     }
 

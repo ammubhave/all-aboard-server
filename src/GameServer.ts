@@ -18,10 +18,12 @@ class GameInfo {
         this.connectedPlayers = new Map();
 
         switch (gameName) {
-            // case 'codenames':
-            //     this.game = new Codenames();
+            case 'codenames':
+                this.game = new Codenames();
+                break;
             case 'jaipur':
                 this.game = new Jaipur();
+                break;
         }
 
         this.game.setOnContentChangeCallback(onContentChange);
