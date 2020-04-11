@@ -200,7 +200,7 @@ export default class Codenames implements Game {
                 if (this.boardColors[action.rowIndex][action.colIndex] === "white" || this.boardColors[action.rowIndex][action.colIndex] === (this.getPlayerTeam(playerName) === "red" ? "blue" : "red")) {
                     this.currentTurn = this.currentTurn === "red" ? "blue" : "red";
                 } else if (this.boardColors[action.rowIndex][action.colIndex] === "black") {
-                    this.currentTurn === "red" ? "blue" : "red";
+                    this.currentTurn = this.currentTurn === "red" ? "blue" : "red";
                     this.status = "game-over";
                 } else {
                     if (this.isWon(this.getPlayerTeam(playerName))) {
