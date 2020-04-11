@@ -1,5 +1,4 @@
 export interface Game {
-    start(playerNames: string[]): void;
     takeAction(playerName: string, action: any): void;
     addPlayer(playerName: string): void;
     removePlayer(playerName: string): void;

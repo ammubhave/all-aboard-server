@@ -120,8 +120,6 @@ export default class GameServer {
 
             socket.on("action", (action: any) => game.takeAction(playerName, action));
 
-            socket.on("start", () => game.start(Array.from(connectedPlayers.keys())));
-
             socket.on("disconnect", () => {
                 if (playerName == "board") {
                     connectedBoards.delete(socket);

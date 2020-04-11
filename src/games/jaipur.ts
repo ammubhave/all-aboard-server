@@ -230,10 +230,9 @@ export default class Jaipur implements Game {
         this.playerNames.forEach(playerName => this.onHandChange(playerName, this.getHand(playerName)));
     }
 
-    public start(playerNames: string[]) {
-        if (playerNames.length !== 2) return;
+    public start() {
+        if (this.playerNames.length !== 2) return;
         console.log("Starting game");
-        this.playerNames = playerNames;
 
         this.newRound();
     }
@@ -432,6 +431,11 @@ export default class Jaipur implements Game {
 
     public takeAction(playerName: string, action: any) {
         console.log("action " + playerName + " " + action.type);
+
+        if (action.type === "start") {
+            return this.start();
+        }
+
         if (playerName === "board") {
             switch (action.type) {
                 case "take-all-camels":
