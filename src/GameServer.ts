@@ -44,6 +44,11 @@ export default class GameServer {
         this.app = express();
         this.port = process.env.PORT || GameServer.DEFAULT_PORT;
         this.password = process.env.PASSWORD || "";
+
+        this.app.get('/.well-known/acme-challenge/:content', function (req, res) {
+            res.send(process.env.ACME_CHALLENGE || "");
+        });
+
         this.server = http.createServer(this.app);
         this.io = require("socket.io").listen(this.server, { origins: '*:*' });
 
