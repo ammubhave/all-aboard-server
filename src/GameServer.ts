@@ -128,8 +128,8 @@ export default class GameServer {
                 } else {
                     connectedPlayers.get(playerName).delete(socket);
                     if (connectedPlayers.get(playerName).size == 0) {
-                        connectedPlayers.delete(playerName);
                         game.removePlayer(playerName);
+                        connectedPlayers.delete(playerName);
                     }
                     connectedBoards.forEach(socket => socket.emit("players", Array.from(connectedPlayers.keys())));
                 }

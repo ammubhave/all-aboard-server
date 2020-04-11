@@ -63,7 +63,6 @@ const CARDS_ALL = {
 };
 
 export default class Jaipur implements Game {
-
     private playerStates: [PlayerState, PlayerState];
     private market: [Card, Card, Card, Card, Card];
     private marketIsSelected: [boolean, boolean, boolean, boolean, boolean];
@@ -239,8 +238,16 @@ export default class Jaipur implements Game {
         this.newRound();
     }
 
-    public addPlayer(playerName: string) { }
-    public removePlayer(playerName: string) { }
+    public addPlayer(playerName: string) {
+        this.playerNames.push(playerName);
+        this.onBoardChange(this.getBoard());
+        console.log(this.playerNames);
+    }
+    public removePlayer(playerName: string) {
+        this.playerNames.splice(this.playerNames.indexOf(playerName), 1);
+        this.onBoardChange(this.getBoard());
+        console.log(this.playerNames);
+    }
 
     public setOnBoardChangeCallback(onBoardChange: (board: any) => void) {
         this.onBoardChange = onBoardChange;
@@ -373,6 +380,7 @@ export default class Jaipur implements Game {
             camelToken: this.camelToken,
             currentPlayerIndex: this.currentPlayerIndex,
             buttons,
+            players: this.playerNames,
         };
     }
 
