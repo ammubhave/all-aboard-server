@@ -8,27 +8,23 @@ import Codenames from "./games/codenames";
 type GameKey = string;
 
 class GameInfo {
-    connectedBoards: Set<SocketIO.Socket>;
     connectedPlayers: Map<string, Set<SocketIO.Socket>>;
     game: Game;
 
     constructor(
         gameName: string,
-        onBoardChange: (board: any) => void,
-        onHandChange: (playerName: string, hand: any) => void
+        onContentChange: (playerName: string, content: any) => void
     ) {
-        this.connectedBoards = new Set();
         this.connectedPlayers = new Map();
 
         switch (gameName) {
-            case 'codenames':
-                this.game = new Codenames();
+            // case 'codenames':
+            //     this.game = new Codenames();
             case 'jaipur':
                 this.game = new Jaipur();
         }
 
-        this.game.setOnBoardChangeCallback(onBoardChange);
-        this.game.setOnHandChangeCallback(onHandChange);
+        this.game.setOnContentChangeCallback(onContentChange);
     }
 }
 
@@ -61,18 +57,12 @@ export default class GameServer {
         this.listen();
     }
 
-    private onBoardChange = (gameKey: GameKey, board: any) => {
-        const myConnectedClients = this.games.get(gameKey);
-        if (myConnectedClients === undefined) { return; }
-        myConnectedClients.connectedBoards.forEach(socket => socket.emit("board", board));
-    };
-
-    private onHandChange = (gameKey: GameKey, playerName: string, hand: any) => {
+    private onContentChange = (gameKey: GameKey, playerName: string, content: any) => {
         const myConnectedClients = this.games.get(gameKey);
         if (myConnectedClients === undefined) { return; }
         const connectedPlayer = myConnectedClients.connectedPlayers.get(playerName);
         if (connectedPlayer === undefined) { return; }
-        connectedPlayer.forEach(socket => socket.emit("hand", hand));
+        connectedPlayer.forEach(socket => socket.emit("content", content));
     };
 
     private listen(): void {
@@ -93,46 +83,32 @@ export default class GameServer {
                     gameKey,
                     new GameInfo(
                         gameName,
-                        (board) => this.onBoardChange(gameKey, board),
-                        (playerName: string, hand: any) => this.onHandChange(gameKey, playerName, hand)));
+                        (playerName: string, content: any) => this.onContentChange(gameKey, playerName, content)));
 
                 console.log("Game code %s created", gameKey);
             }
 
-            const connectedBoards = this.games.get(gameKey).connectedBoards;
             const connectedPlayers = this.games.get(gameKey).connectedPlayers;
             const game = this.games.get(gameKey).game;
 
-            if (playerName == "board") {
-                connectedBoards.add(socket);
-                socket.emit("board", game.getBoard());
-                socket.emit("players", Array.from(connectedPlayers.keys()));
-            } else {
-                if (!connectedPlayers.has(playerName)) {
-                    connectedPlayers.set(playerName, new Set());
-                    game.addPlayer(playerName);
-                }
-                connectedPlayers.get(playerName).add(socket);
-                socket.emit("hand", game.getHand(playerName));
-
-                connectedBoards.forEach(socket => socket.emit("players", Array.from(connectedPlayers.keys())));
+            if (!connectedPlayers.has(playerName)) {
+                connectedPlayers.set(playerName, new Set());
+                game.addPlayer(playerName);
             }
+            connectedPlayers.get(playerName).add(socket);
+            socket.emit("content", game.getContent(playerName));
 
             socket.on("action", (action: any) => game.takeAction(playerName, action));
 
             socket.on("disconnect", () => {
-                if (playerName == "board") {
-                    connectedBoards.delete(socket);
-                } else {
-                    connectedPlayers.get(playerName).delete(socket);
-                    if (connectedPlayers.get(playerName).size == 0) {
-                        game.removePlayer(playerName);
-                        connectedPlayers.delete(playerName);
-                    }
-                    connectedBoards.forEach(socket => socket.emit("players", Array.from(connectedPlayers.keys())));
+
+                connectedPlayers.get(playerName).delete(socket);
+                if (connectedPlayers.get(playerName).size == 0) {
+                    game.removePlayer(playerName);
+                    connectedPlayers.delete(playerName);
                 }
 
-                if (connectedBoards.size === 0 && connectedPlayers.size === 0) {
+                if (connectedPlayers.size === 0) {
                     this.games.delete(gameKey);
                     console.log("Game code %s deleted", gameKey);
                 }

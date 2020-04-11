@@ -238,14 +238,21 @@ export default class Jaipur implements Game {
     }
 
     public addPlayer(playerName: string) {
+        if (playerName === "board") return;
+
         this.playerNames.push(playerName);
         this.onBoardChange(this.getBoard());
-        console.log(this.playerNames);
     }
     public removePlayer(playerName: string) {
+        if (playerName === "board") return;
+
         this.playerNames.splice(this.playerNames.indexOf(playerName), 1);
         this.onBoardChange(this.getBoard());
-        console.log(this.playerNames);
+    }
+
+    public setOnContentChangeCallback(onContentChange: (playerName: string, content: any) => void) {
+        this.setOnBoardChangeCallback((board: any) => onContentChange('board', board));
+        this.setOnHandChangeCallback((playerName: string, hand: any) => onContentChange(playerName, hand));
     }
 
     public setOnBoardChangeCallback(onBoardChange: (board: any) => void) {
@@ -254,6 +261,11 @@ export default class Jaipur implements Game {
 
     public setOnHandChangeCallback(onHandChange: (playerName: string, hand: any) => void) {
         this.onHandChange = onHandChange;
+    }
+
+    public getContent(playerName: string): any {
+        if (playerName === "board") return this.getBoard();
+        else return this.getHand(playerName);
     }
 
     public getBoard(): any {
@@ -394,10 +406,12 @@ export default class Jaipur implements Game {
         }
 
         const displayText = (() => {
+            if (this.status === "reset") {
+                return "Waiting for game to start";
+            }
+
             if (this.currentPlayerIndex !== playerIndex) return "";
             switch (this.status) {
-                case "reset":
-                    return "Waiting for game to start";
                 case "start-turn":
                     return "It's your turn!";
                 case "take-single-good":

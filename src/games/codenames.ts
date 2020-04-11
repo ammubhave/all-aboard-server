@@ -187,6 +187,10 @@ export default class Codenames implements Game {
     public addPlayer(playerName: string) { }
     public removePlayer(playerName: string) { }
 
+    public setOnContentChangeCallback(onContentChange: (playerName: string, content: any) => void) {
+        // this.onHandChange = onHandChange;
+    }
+
     public setOnHandChangeCallback(onHandChange: (playerName: string, hand: any) => void) {
         this.onHandChange = onHandChange;
     }
@@ -315,6 +319,8 @@ export default class Codenames implements Game {
         //     currentPlayerIndex: this.currentPlayerIndex,
         //     buttons,
         // };
+    }
+    public getContent(playerName: string) {
     }
 
     public getHand(playerName: string) {

@@ -3,9 +3,6 @@ export interface Game {
     addPlayer(playerName: string): void;
     removePlayer(playerName: string): void;
 
-    getBoard(): any;
-    setOnBoardChangeCallback(onBoardChange: (board: any) => void): void;
-
-    getHand(playerName: string): any;
-    setOnHandChangeCallback(onHandChange: (playerName: string, hand: any) => void): void;
+    getContent(playerName: string): any;
+    setOnContentChangeCallback(onContentChange: (playerName: string, content: any) => void): void;
 }

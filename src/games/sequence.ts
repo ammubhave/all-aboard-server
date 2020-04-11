@@ -75,6 +75,10 @@ export default class Sequence implements Game {
         this.playerNames.forEach(playerName => this.onHandChange(playerName, this.getHand(playerName)));
     }
 
+    public setOnContentChangeCallback(onContentChange: (playerName: string, content: any) => void) {
+        // this.onHandChange = onHandChange;
+    }
+
     public setOnBoardChangeCallback(onBoardChange: (board: any) => void) {
         this.onBoardChange = onBoardChange;
     }
@@ -83,6 +87,8 @@ export default class Sequence implements Game {
         this.onHandChange = onHandChange;
     }
 
+    public getContent(playerName: string) {
+    }
     public getBoard() {
         const layout = Sequence.BOARD_LAYOUT.map((row, rowIndex) => row.map((card, colIndex) => {
             return {

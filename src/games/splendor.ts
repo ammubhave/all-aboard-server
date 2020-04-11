@@ -390,6 +390,10 @@ export default class Splendor implements Game {
         this.onBoardChange(this.getBoard());
         this.playerNames.forEach(playerName => this.onHandChange(playerName, this.getHand(playerName)));
     }
+    public setOnContentChangeCallback(onContentChange: (playerName: string, content: any) => void) {
+        // this.onHandChange = onHandChange;
+    }
+
 
     public setOnBoardChangeCallback(onBoardChange: (board: any) => void) {
         this.onBoardChange = onBoardChange;
@@ -402,6 +406,8 @@ export default class Splendor implements Game {
     public addPlayer(playerName: string) { }
     public removePlayer(playerName: string) { }
 
+    public getContent(playerName: string) {
+    }
     public getBoard(): BoardState {
         return {
             faceupCards: this.board,
