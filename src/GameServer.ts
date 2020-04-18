@@ -4,6 +4,7 @@ import * as http from "http";
 import * as SocketIO from "socket.io";
 import Jaipur from "./games/jaipur";
 import Codenames from "./games/codenames";
+import Splendor from "./games/splendor";
 
 type GameKey = string;
 
@@ -23,6 +24,9 @@ class GameInfo {
                 break;
             case 'jaipur':
                 this.game = new Jaipur();
+                break;
+            case 'splendor':
+                this.game = new Splendor();
                 break;
         }
 
