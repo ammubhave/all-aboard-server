@@ -1,6 +1,5 @@
-import { Game } from './interface';
-import * as assert from 'assert';
-import { shuffleArrayRandom } from '../util';
+import { Game } from '../interface';
+import { shuffleArrayRandom } from '../../util';
 
 type Card = string;
 type BoardPlayerState = {

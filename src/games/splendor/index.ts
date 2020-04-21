@@ -1,7 +1,6 @@
-import { Game } from './interface';
+import { Game } from '../interface';
 import * as assert from 'assert';
-import { rotateArrayRandom, shuffleArrayRandom } from '../util';
-import { listenerCount } from 'cluster';
+import { shuffleArrayRandom } from '../../util';
 
 function hasKey<O>(obj: O, key: keyof any): key is keyof O {
     return key in obj

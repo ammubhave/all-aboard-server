@@ -1,8 +1,6 @@
-import { Game } from './interface';
-import * as assert from 'assert';
-import { rotateArrayRandom, shuffleArrayRandom } from '../util';
+import { Game } from '../interface';
+import { shuffleArrayRandom } from '../../util';
 import { readFileSync } from "fs";
-import path from "path";
 
 type BoardCell = {
     kind: string,

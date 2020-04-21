@@ -1,6 +1,6 @@
-import { Game } from './interface';
+import { Game } from '../interface';
 import * as assert from 'assert';
-import { rotateArrayRandom, shuffleArrayRandom } from '../util';
+import { rotateArrayRandom, shuffleArrayRandom } from '../../util';
 
 export default class Sequence implements Game {
     private static readonly BOARD_LAYOUT = [
