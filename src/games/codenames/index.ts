@@ -25,7 +25,7 @@ export default class Codenames implements Game {
 
     constructor() {
         this.onContentChange = () => { };
-        this.allWords = readFileSync('./src/games/codenames-words.txt').toString().split('\n').map(word => word.trim().toUpperCase());
+        this.allWords = readFileSync('./src/games/codenames/words.txt').toString().split('\n').map(word => word.trim().toUpperCase());
         this.playersStandingBy = [];
         this.currentTurn = undefined;
         this.redPlayers = [];
