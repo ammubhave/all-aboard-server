@@ -192,22 +192,32 @@ export default class Codenames implements Game {
                 this.start();
                 break;
             case "card":
+                // Card already hit, no-op
                 if (this.boardRevealed[action.rowIndex][action.colIndex]) return;
 
                 this.boardRevealed[action.rowIndex][action.colIndex] = true;
-                if (this.boardColors[action.rowIndex][action.colIndex] === "white" || this.boardColors[action.rowIndex][action.colIndex] === (this.getPlayerTeam(playerName) === "red" ? "blue" : "red")) {
-                    this.currentTurn = this.currentTurn === "red" ? "blue" : "red";
+                if (this.boardColors[action.rowIndex][action.colIndex] === "white") {
+                    // Hit a bystander, end of turn
+                    this.currentTurn = this.otherTeam(this.currentTurn);
+                } else if (this.boardColors[action.rowIndex][action.colIndex] === this.otherTeam(this.getPlayerTeam(playerName))) {
+                    // Hit a card of the other team, end of turn, and check whether it made other team win
+                    this.currentTurn = this.otherTeam(this.currentTurn);
+                    if (this.isWon(this.currentTurn)) {
+                        this.status = "game-over";
+                    }
                 } else if (this.boardColors[action.rowIndex][action.colIndex] === "black") {
-                    this.currentTurn = this.currentTurn === "red" ? "blue" : "red";
+                    // Hit the assassin, end of turn, and other team won
+                    this.currentTurn = this.otherTeam(this.currentTurn);
                     this.status = "game-over";
                 } else {
-                    if (this.isWon(this.getPlayerTeam(playerName))) {
+                    // Hit a card of the current team, check whether it made current team win
+                    if (this.isWon(this.currentTurn)) {
                         this.status = "game-over";
                     }
                 }
                 break;
             case "end-turn":
-                this.currentTurn = this.currentTurn === "red" ? "blue" : "red";
+                this.currentTurn = this.otherTeam(this.currentTurn);
                 break;
         }
 
