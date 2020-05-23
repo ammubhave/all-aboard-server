@@ -1,6 +1,6 @@
 # All A-Board Server
 
-This is the server component of All A-Board. View the (main project page)[https://github.com/ammubhave/all-aboard] for All A-Board for getting started instructions.
+This is the server component of All A-Board. View the [main project page](https://github.com/ammubhave/all-aboard) for All A-Board for getting started instructions.
 
 ## Running the server
 
