@@ -556,7 +556,7 @@ export default class Splendor implements Game {
                 break;
         }
 
-        if (this.playerStates.map(state => state.prestige >= 1).reduce((p, c) => p || c, false) && this.status === "start-turn") {
+        if (this.playerStates.map(state => state.prestige >= 15).reduce((p, c) => p || c, false) && this.status === "start-turn") {
             displayText = "Last Round - " + displayText;
         }
 
@@ -992,7 +992,7 @@ export default class Splendor implements Game {
 
     private getWinners() {
         const prestiges = this.playerStates.map((state, index) => [state.prestige, Object.values(state.cards).reduce((p, c) => p + c, 0), index]).sort((a, b) => (a[0] - b[0]) * 100 + b[1] - b[0]).reverse();
-        if (prestiges[0][0] >= 1) {
+        if (prestiges[0][0] >= 15) {
             const winners: number[] = [];
             prestiges.forEach(([prestige, dev, index]) => {
                 if (prestige === prestiges[0][0] && dev === prestiges[0][1]) {
