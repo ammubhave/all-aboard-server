@@ -759,11 +759,13 @@ export default class Splendor implements Game {
                                 if (!hasKey(cost, color) || cost[color] === 0) return;
                                 const consumed = cost[color] <= this.playerStates[this.currentPlayerIndex].coins[color] ? cost[color] : this.playerStates[this.currentPlayerIndex].coins[color];
                                 this.playerStates[this.currentPlayerIndex].coins[color] -= consumed;
+                                this.coins[color] += consumed;
                                 cost[color] -= consumed;
                             });
                             ["blue", "red", "green", "white", "black"].forEach(color => {
                                 if (!hasKey(cost, color) || cost[color] === 0) return;
                                 this.playerStates[this.currentPlayerIndex].coins.gold -= cost[color];
+                                this.coins.gold += cost[color];
                             });
 
                             this.playerStates[this.currentPlayerIndex].prestige += card.prestige;
@@ -794,11 +796,13 @@ export default class Splendor implements Game {
                     if (!hasKey(cost, color) || cost[color] === 0) return;
                     const consumed = cost[color] <= this.playerStates[this.currentPlayerIndex].coins[color] ? cost[color] : this.playerStates[this.currentPlayerIndex].coins[color];
                     this.playerStates[this.currentPlayerIndex].coins[color] -= consumed;
+                    this.coins[color] += consumed;
                     cost[color] -= consumed;
                 });
                 ["blue", "red", "green", "white", "black"].forEach(color => {
                     if (!hasKey(cost, color) || cost[color] === 0) return;
                     this.playerStates[this.currentPlayerIndex].coins.gold -= cost[color];
+                    this.coins.gold += cost[color];
                 });
 
                 this.playerStates[this.currentPlayerIndex].prestige += card.prestige;
