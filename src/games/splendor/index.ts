@@ -211,7 +211,7 @@ export default class Splendor implements Game {
             }
         }
         return cards;
-    })();
+    });
 
     LEVEL2_CARDS = (() => {
         const cards = new Set<Card>();
@@ -238,7 +238,7 @@ export default class Splendor implements Game {
             }
         }
         return cards;
-    })();
+    });
 
     LEVEL3_CARDS = (() => {
         const cards = new Set<Card>();
@@ -265,7 +265,7 @@ export default class Splendor implements Game {
             }
         }
         return cards;
-    })();
+    });
 
     NOBLE_INFOS = [
         [3, 3, 0, 0, 3, 2],
@@ -355,9 +355,9 @@ export default class Splendor implements Game {
 
         // reset draw piles
         this.drawPiles = [
-            shuffleArrayRandom(Array.from(this.LEVEL3_CARDS)),
-            shuffleArrayRandom(Array.from(this.LEVEL2_CARDS)),
-            shuffleArrayRandom(Array.from(this.LEVEL1_CARDS)),
+            shuffleArrayRandom(Array.from(this.LEVEL3_CARDS())),
+            shuffleArrayRandom(Array.from(this.LEVEL2_CARDS())),
+            shuffleArrayRandom(Array.from(this.LEVEL1_CARDS())),
         ];
 
         this.coins = { white: 0, blue: 0, green: 0, red: 0, black: 0, gold: 0 };
